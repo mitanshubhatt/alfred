@@ -18,7 +18,7 @@ class RedisManager:
             decode_responses=True
         )
 
-    async def increment_request_count(self, user_id: int, org_id: int, rule_id: str, expiration: int = 3600) -> int:
+    async def increment_request_count(self, user_id: int, org_id: int, rule_id: str, expiration: int = 3600) -> list:
         key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
         is_new = await self.client.setnx(key, 0)
         count = await self.client.incr(key)
@@ -26,7 +26,7 @@ class RedisManager:
         if is_new:
             await self.client.expire(key, expiration)
 
-        return count
+        return [True, {"key": key, "count": count}]
 
     async def get_request_count(self, user_id: int, org_id: int, rule_id: str) -> int:
         key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"

@@ -12,18 +12,17 @@ class BaseModelValidation(BaseValidation, ABC):
         self.limit = limit
         self.expiration_func = expiration_func
 
-    async def validate_request(self, user_id: int, org_id: int, rule_id: str) -> bool:
+    async def validate_request(self, user_id: int, org_id: int, rule_id: str) -> list:
         """
         Validate if the request is within the allowed limit.
         """
         current_count = await self.redis_manager.get_request_count(user_id, org_id, rule_id)
         if current_count >= self.limit:
-            return False
+            return [False, {}]
 
-        await self.redis_manager.increment_request_count(
+        return await self.redis_manager.increment_request_count(
             user_id=user_id, org_id=org_id, rule_id=rule_id, expiration=self.expiration_func()
         )
-        return True
 
     @staticmethod
     def calculate_month_expiration():

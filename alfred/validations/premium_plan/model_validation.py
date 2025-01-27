@@ -12,7 +12,7 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.standard_models = {"gpt-4o", "gpt-4o-mini"}
         self.premium_models = {"o1-preview", "o1-mini", "Claude 3.5 Sonnet", "3 Opus"}
 
-    async def validate(self, model, user_id: int, org_id: int, rule_id: str) -> bool:
+    async def validate(self, model, user_id: int, org_id: int, rule_id: str) -> list:
         """
         Validate if the request is within the allowed limits for standard or premium models.
         """
@@ -23,6 +23,6 @@ class PremiumPlanModelValidation(BaseModelValidation):
             self.limit = 10
             self.expiration_func = self.calculate_day_expiration
         else:
-            return False
+            return [False, {}]
 
         return await self.validate_request(user_id, org_id, rule_id)
