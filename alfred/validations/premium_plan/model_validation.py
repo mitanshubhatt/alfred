@@ -1,28 +1,45 @@
+import json
+
 from alfred.redis_manager import RedisManager
 from alfred.validations.base_model_validation import BaseModelValidation
 
 
 class PremiumPlanModelValidation(BaseModelValidation):
-    def __init__(self, redis_manager: RedisManager):
+    def __init__(self, redis_manager: RedisManager, rule_id, condition_data, **kwargs):
         super().__init__(
             redis_manager=redis_manager,
             limit=None,
             expiration_func=None
         )
-        self.standard_models = {"gpt-4o", "gpt-4o-mini"}
-        self.premium_models = {"o1-preview", "o1-mini", "Claude 3.5 Sonnet", "3 Opus"}
+        self.kwargs = kwargs
+        self.rule_id = rule_id
+        self.standard_models = json.loads(condition_data["allowed_standard_models"])
+        self.premium_models = json.loads(condition_data["allowed_premium_models"])
+        self.premium_models_limit = int(condition_data["premium_models_limit"])
+        self.standard_models_limit = int(condition_data["standard_models_limit"])
+        self.premium_limit_time_period = condition_data["premium_limit_time_period"]
+        self.standard_limit_time_period = condition_data["standard_limit_time_period"]
 
-    async def validate(self, model, user_id: int, org_id: int, rule_id: str) -> list:
+
+    async def validate(self) -> list:
         """
         Validate if the request is within the allowed limits for standard or premium models.
         """
+        self._validate_kwargs(self.kwargs)
+        model = self.kwargs.get("model_used")
+        user_id = self.kwargs.get("user_id")
+        org_id = self.kwargs.get("org_id")
+        time_period_mapper = {
+            "monthly": self.calculate_month_expiration,
+            "daily": self.calculate_month_expiration
+        }
         if model in self.standard_models:
-            self.limit = 500
-            self.expiration_func = self.calculate_month_expiration
+            self.limit = self.standard_models_limit
+            self.expiration_func = time_period_mapper[self.standard_limit_time_period]
         elif model in self.premium_models:
-            self.limit = 10
-            self.expiration_func = self.calculate_day_expiration
+            self.limit = self.premium_models_limit
+            self.expiration_func = time_period_mapper[self.premium_limit_time_period]
         else:
             return [False, {}]
 
-        return await self.validate_request(user_id, org_id, rule_id)
+        return await self.validate_request(user_id, org_id, self.rule_id)
