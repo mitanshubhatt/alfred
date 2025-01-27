@@ -12,7 +12,7 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.standard_models = {"gpt-4o", "gpt-4o-mini"}
         self.premium_models = {"o1-preview", "o1-mini", "Claude 3.5 Sonnet", "3 Opus"}
 
-    async def validate(self, model, user_id: int, org_id: int, rule_id: str) -> list:
+    async def validate(self, model, user_id: int, org_id: int, rule_id: str, **kwargs) -> list:
         """
         Validate if the request is within the allowed limits for standard or premium models.
         """

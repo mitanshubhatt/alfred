@@ -11,7 +11,7 @@ class FreePlanModelValidation(BaseModelValidation):
         )
         self.allowed_models = {"gpt-4o", "gpt-4o-mini"}
 
-    async def validate(self, model, user_id: int, org_id: int, rule_id: str) -> list:
+    async def validate(self, model, user_id: int, org_id: int, rule_id: str, **kwargs) -> list:
         """
         Validate if the request is within the allowed limit for the model.
         """
