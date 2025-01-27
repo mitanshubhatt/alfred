@@ -2,7 +2,7 @@ from alfred.redis_manager import RedisManager
 from alfred.validations.base_model_validation import BaseModelValidation
 
 
-class ModelValidation(BaseModelValidation):
+class PremiumPlanModelValidation(BaseModelValidation):
     def __init__(self, redis_manager: RedisManager):
         super().__init__(
             redis_manager=redis_manager,
