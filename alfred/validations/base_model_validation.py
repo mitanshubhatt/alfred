@@ -25,6 +25,16 @@ class BaseModelValidation(BaseValidation, ABC):
         )
 
     @staticmethod
+    def _validate_kwargs(kwargs):
+        """
+        Helper method to validate required `kwargs`.
+        """
+        required_keys = ["user_id", "org_id", "model_used"]
+        missing_keys = [key for key in required_keys if not kwargs.get(key)]
+        if missing_keys:
+            raise ValueError(f"Missing required keys in kwargs: {', '.join(missing_keys)}")
+
+    @staticmethod
     def calculate_month_expiration():
         """
         Calculate the expiration time in seconds for the current month.

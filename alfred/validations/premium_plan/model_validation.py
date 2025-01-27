@@ -20,13 +20,12 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.premium_limit_time_period = condition_data["premium_limit_time_period"]
         self.standard_limit_time_period = condition_data["standard_limit_time_period"]
 
+
     async def validate(self) -> list:
         """
         Validate if the request is within the allowed limits for standard or premium models.
         """
-        if not self.kwargs.get("user_id", None) or not self.kwargs.get("org_id", None):
-            raise ValueError("Organisation ID or User ID missing from the arguments")
-
+        self._validate_kwargs(self.kwargs)
         model = self.kwargs.get("model_used")
         user_id = self.kwargs.get("user_id")
         org_id = self.kwargs.get("org_id")

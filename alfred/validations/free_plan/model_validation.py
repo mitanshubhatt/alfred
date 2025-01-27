@@ -19,8 +19,7 @@ class FreePlanModelValidation(BaseModelValidation):
         """
         Validate if the request is within the allowed limit for the model.
         """
-        if not self.kwargs.get("user_id", None) or not self.kwargs.get("org_id", None):
-            raise ValueError("Organisation ID or User ID missing from the arguments")
+        self._validate_kwargs(self.kwargs)
         model = self.kwargs.get("model_used")
         if model not in self.allowed_models:
             return [False, {}]
