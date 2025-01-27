@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from urllib.parse import urlparse
 import redis.asyncio as redis
 
@@ -18,20 +19,33 @@ class RedisManager:
             decode_responses=True
         )
 
-    async def increment_request_count(self, user_id: int, org_id: int, rule_id: str, expiration: int = 3600) -> list:
-        key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
-        is_new = await self.client.setnx(key, 0)
-        count = await self.client.incr(key)
+    @asynccontextmanager
+    async def connect(self):
+        """
+        Provides an async Redis client via a context manager.
+        """
+        try:
+            yield self.client
+        finally:
+            await self.client.close()
 
-        if is_new:
-            await self.client.expire(key, expiration)
+    async def increment_request_count(self, user_id: int, org_id: int, rule_id: str, expiration: int = 3600) -> list:
+        async with self.connect() as client:
+            key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
+            is_new = await client.setnx(key, 0)
+            count = await client.incr(key)
+
+            if is_new:
+                await client.expire(key, expiration)
 
         return [True, {"key": key, "count": count}]
 
     async def get_request_count(self, user_id: int, org_id: int, rule_id: str) -> int:
-        key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
-        return int(await self.client.get(key) or 0)
+        async with self.connect() as client:
+            key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
+        return int(await client.get(key) or 0)
 
     async def reset_request_count(self, user_id: int, org_id: int, rule_id: str):
-        key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
-        await self.client.delete(key)
+        async with self.connect() as client:
+            key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
+            await client.delete(key)
