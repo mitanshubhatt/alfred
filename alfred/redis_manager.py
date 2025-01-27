@@ -1,14 +1,11 @@
 from urllib.parse import urlparse
 import redis.asyncio as redis
-from contextlib import asynccontextmanager
-from config.settings import loaded_config
 
 class RedisManager:
     """
     A class that manages Redis operations with an async client.
     """
-    def __init__(self):
-        redis_url = loaded_config.REDIS_URL
+    def __init__(self, redis_url: str):
         parsed_url = urlparse(redis_url)
         self.redis_host = parsed_url.hostname
         self.redis_port = parsed_url.port
