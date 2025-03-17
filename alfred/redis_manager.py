@@ -38,7 +38,7 @@ class RedisManager:
             if is_new:
                 await client.expire(key, expiration)
 
-        return [True, {"key": key, "count": count}]
+        return [True, {"key": key, "count": count}, "SUCCESS"]
 
     async def get_request_count(self, user_id: int, org_id: int, rule_id: str) -> int:
         async with self.connect() as client:
