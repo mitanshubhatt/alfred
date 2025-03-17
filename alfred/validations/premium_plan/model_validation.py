@@ -19,6 +19,7 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.standard_models_limit = int(condition_data["standard_models_limit"])
         self.premium_limit_time_period = condition_data["premium_limit_time_period"]
         self.standard_limit_time_period = condition_data["standard_limit_time_period"]
+        self.error_message = "MODEL_NOT_ALLOWED"
 
 
     async def validate(self) -> list:
@@ -40,6 +41,6 @@ class PremiumPlanModelValidation(BaseModelValidation):
             self.limit = self.premium_models_limit
             self.expiration_func = time_period_mapper[self.premium_limit_time_period]
         else:
-            return [False, {}]
+            return [False, {}, self.error_message]
 
         return await self.validate_request(user_id, org_id, self.rule_id)

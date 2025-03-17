@@ -11,6 +11,7 @@ class BaseModelValidation(BaseValidation, ABC):
         self.redis_manager = redis_manager
         self.limit = limit
         self.expiration_func = expiration_func
+        self.limit_reached_message = "MODEL_REQUEST_LIMIT_REACHED"
 
     async def validate_request(self, user_id: int, org_id: int, rule_id: str) -> list:
         """
@@ -18,7 +19,7 @@ class BaseModelValidation(BaseValidation, ABC):
         """
         current_count = await self.redis_manager.get_request_count(user_id, org_id, rule_id)
         if current_count >= self.limit:
-            return [False, {}]
+            return [False, {}, self.limit_reached_message]
 
         return await self.redis_manager.increment_request_count(
             user_id=user_id, org_id=org_id, rule_id=rule_id, expiration=self.expiration_func()

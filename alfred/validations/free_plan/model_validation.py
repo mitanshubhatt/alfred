@@ -13,6 +13,7 @@ class FreePlanModelValidation(BaseModelValidation):
         self.allowed_models = self._extract_allowed_models(condition_data)
         self.rule_id = rule_id
         self.kwargs = kwargs
+        self.error_message = "MODEL_NOT_ALLOWED"
 
     @staticmethod
     def _extract_request_limit(condition_data):
@@ -32,7 +33,7 @@ class FreePlanModelValidation(BaseModelValidation):
         self._validate_kwargs(self.kwargs)
         model = self.kwargs.get("model_used")
         if not self._is_model_allowed(model):
-            return [False, {}]
+            return [False, {}, self.error_message]
         
         user_id = self.kwargs.get("user_id")
         org_id = self.kwargs.get("org_id")
