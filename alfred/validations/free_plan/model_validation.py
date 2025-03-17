@@ -23,7 +23,7 @@ class FreePlanModelValidation(BaseModelValidation):
     def _extract_allowed_models(condition_data):
         """Extract and return the allowed models from condition data."""
         allowed_models_json = condition_data.get("allowed_models", "[]")
-        return json.loads(allowed_models_json)
+        return eval(allowed_models_json)
 
     async def validate(self) -> list:
         """
