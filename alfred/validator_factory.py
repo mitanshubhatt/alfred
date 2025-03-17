@@ -1,4 +1,5 @@
 import importlib
+import importlib.util
 import os
 from alfred.redis_manager import RedisManager
 
@@ -54,19 +55,20 @@ class ValidatorFactory:
         ]
 
         for folder in validator_folders:
-            folder_path = folder.replace(".", "/")
-            if os.path.exists(folder_path):
-                for file in os.listdir(folder_path):
-                    if file.endswith(".py") and file != "__init__.py":
-                        module_name = f"{folder}.{file[:-3]}"
-                        try:
-                            return self._find_class_in_module(module_name, rule_class_name)
-                        except ValueError:
-                            continue
+            module_spec = importlib.util.find_spec(folder)
+            if module_spec and module_spec.origin:
+                folder_path = os.path.dirname(module_spec.origin)
 
-        raise ValueError(
-            f"Validator class '{rule_class_name}' not found in any of the specified folders."
-        )
+                if os.path.exists(folder_path):
+                    for file in os.listdir(folder_path):
+                        if file.endswith(".py") and file != "__init__.py":
+                            module_name = f"{folder}.{file[:-3]}"
+                            try:
+                                return self._find_class_in_module(module_name, rule_class_name)
+                            except ValueError:
+                                continue
+
+        raise ValueError(f"Validator class '{rule_class_name}' not found in any of the specified folders.")
 
     def load_validator(self, rule_json: dict, **kwargs):
         """
@@ -86,4 +88,4 @@ class ValidatorFactory:
 
         rule_class_name = rule_json["rule_class_name"]
         validator_class = self._get_validator_class(rule_class_name)
-        return validator_class(self.redis_manager, rule_json["id"], rule_json["condition_data"], **kwargs)
+        return validator_class(self.redis_manager, rule_json["id"], rule_json["conditions"], **kwargs)
