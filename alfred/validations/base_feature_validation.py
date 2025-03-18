@@ -29,7 +29,7 @@ class BaseFeatureValidation(BaseValidation, ABC):
         """
         Helper method to validate required `kwargs`.
         """
-        required_keys = ["user_id", "org_id", "feature_used", "endpoint"]
+        required_keys = ["user_id", "org_id", "endpoint"]
         missing_keys = [key for key in required_keys if not kwargs.get(key)]
         if missing_keys:
             raise ValueError(f"Missing required keys in kwargs: {', '.join(missing_keys)}")
