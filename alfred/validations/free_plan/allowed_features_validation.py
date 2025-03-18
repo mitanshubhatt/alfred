@@ -10,7 +10,7 @@ class FreePlanRestrictedEndpoints(BaseFeatureValidation):
             limit=self._extract_request_limit(condition_data),
             expiration_func=self.calculate_month_expiration
         )
-        self.restricted_endpoints = self._extract_restricted_endpoints(condition_data)
+        self.condition_endpoints = self._extract_condition_endpoints(condition_data)
         self.rule_id = rule_id
         self.kwargs = kwargs
         self.error_message = "FEATURE_RESTRICTED"
@@ -32,6 +32,6 @@ class FreePlanRestrictedEndpoints(BaseFeatureValidation):
         
         return [True, {}, self.success_message]
     
-    def _is_endpoint_allowed(self, endpoint):
-        """Check if the endpoint is in the list of allowed API endpoints."""
-        return endpoint in self.restricted_endpoints
+    def _is_endpoint_restricted(self, endpoint):
+        """Check if the endpoint is in the list of restricted API endpoints."""
+        return endpoint in self.condition_endpoints
