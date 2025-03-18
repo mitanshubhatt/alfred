@@ -19,7 +19,7 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.standard_models_limit = int(condition_data["standard_models_limit"])
         self.premium_limit_time_period = condition_data["premium_limit_time_period"]
         self.standard_limit_time_period = condition_data["standard_limit_time_period"]
-        self.restricted_endpoints = self._extract_restricted_endpoints(condition_data)
+        self.condition_endpoints = self._extract_condition_endpoints(condition_data)
         self.error_message = "MODEL_NOT_ALLOWED"
 
 
