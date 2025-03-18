@@ -56,7 +56,7 @@ class BaseValidation(ABC):
         """
         await self.redis_manager.reset_request_count(user_id, rule_id)
 
-    def _extract_condition_endpoints(condition_data):
+    def _extract_condition_endpoints(self, condition_data):
         """Extract and return the allowed API endpoints from condition data."""
         condition_endpoints = condition_data.get("condition_endpoints", "[]")
         return eval(condition_endpoints)
