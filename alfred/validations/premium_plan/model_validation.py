@@ -19,6 +19,7 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.standard_models_limit = int(condition_data["standard_models_limit"])
         self.premium_limit_time_period = condition_data["premium_limit_time_period"]
         self.standard_limit_time_period = condition_data["standard_limit_time_period"]
+        self.restricted_endpoints = self._extract_restricted_endpoints(condition_data)
         self.error_message = "MODEL_NOT_ALLOWED"
 
 
@@ -26,6 +27,9 @@ class PremiumPlanModelValidation(BaseModelValidation):
         """
         Validate if the request is within the allowed limits for standard or premium models.
         """
+        if self.kwargs.get("endpoint") not in self.restricted_endpoints:
+            return [True, {}, self.success_message]
+        
         self._validate_kwargs(self.kwargs)
         model = self.kwargs.get("model_used")
         user_id = self.kwargs.get("user_id")

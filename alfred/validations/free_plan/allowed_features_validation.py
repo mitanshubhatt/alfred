@@ -19,12 +19,6 @@ class FreePlanRestrictedEndpoints(BaseFeatureValidation):
     def _extract_request_limit(condition_data):
         """Extract and return the request limit from condition data."""
         return int(condition_data.get("request_limit", 0))
-    
-    @staticmethod
-    def _extract_restricted_endpoints(condition_data):
-        """Extract and return the allowed API endpoints from condition data."""
-        restricted_endpoints = condition_data.get("restricted_endpoints", "[]")
-        return eval(restricted_endpoints)
 
     async def validate(self) -> list:
         """
@@ -36,7 +30,7 @@ class FreePlanRestrictedEndpoints(BaseFeatureValidation):
         if self._is_endpoint_restricted(endpoint):
             return [False, {}, self.error_message]
         
-        return [True, {}, "SUCCESS"]
+        return [True, {}, self.success_message]
     
     def _is_endpoint_allowed(self, endpoint):
         """Check if the endpoint is in the list of allowed API endpoints."""
