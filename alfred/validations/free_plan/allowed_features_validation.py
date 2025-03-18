@@ -23,7 +23,7 @@ class FreePlanRestrictedEndpoints(BaseFeatureValidation):
     @staticmethod
     def _extract_restricted_endpoints(condition_data):
         """Extract and return the allowed API endpoints from condition data."""
-        restricted_endpoints = condition_data.get("allowed_endpoints", "[]")
+        restricted_endpoints = condition_data.get("restricted_endpoints", "[]")
         return eval(restricted_endpoints)
 
     async def validate(self) -> list:
