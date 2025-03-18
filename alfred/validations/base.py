@@ -58,5 +58,5 @@ class BaseValidation(ABC):
 
     def _extract_condition_endpoints(self, condition_data):
         """Extract and return the allowed API endpoints from condition data."""
-        condition_endpoints = condition_data.get("condition_endpoints", "[]")
-        return eval(condition_endpoints)
+        condition_endpoints = condition_data.get("condition_endpoints", [])
+        return condition_endpoints
