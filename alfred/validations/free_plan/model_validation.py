@@ -11,7 +11,7 @@ class FreePlanModelValidation(BaseModelValidation):
             expiration_func=self.calculate_month_expiration
         )
         self.allowed_models = self._extract_allowed_models(condition_data)
-        self.restricted_endpoints = self._extract_restricted_endpoints(condition_data)
+        self.condition_endpoints = self._extract_condition_endpoints(condition_data)
         self.rule_id = rule_id
         self.kwargs = kwargs
         self.error_message = "MODEL_NOT_ALLOWED"
@@ -31,7 +31,7 @@ class FreePlanModelValidation(BaseModelValidation):
         """
         Validate if the request is within the allowed limit for the model.
         """
-        if self.kwargs.get("endpoint") not in self.restricted_endpoints:
+        if self.kwargs.get("endpoint") not in self.condition_endpoints:
             return [True, {}, self.success_message]
         
         self._validate_kwargs(self.kwargs)
