@@ -24,8 +24,8 @@ class FreePlanModelValidation(BaseModelValidation):
     @staticmethod
     def _extract_allowed_models(condition_data):
         """Extract and return the allowed models from condition data."""
-        allowed_models_json = condition_data.get("allowed_models", "[]")
-        return eval(allowed_models_json)
+        allowed_models_json = condition_data.get("allowed_models", [])
+        return allowed_models_json
 
     async def validate(self) -> list:
         """
