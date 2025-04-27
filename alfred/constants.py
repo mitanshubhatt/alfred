@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ResetPeriod(Enum, str):
+class ResetPeriod(str, Enum):
     HOURLY = "hourly"
     DAILY = "daily"
     MONTHLY = "monthly"
