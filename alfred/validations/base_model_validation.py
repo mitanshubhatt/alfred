@@ -1,5 +1,6 @@
 from abc import ABC
 
+from alfred.constants import ResetPeriod
 from alfred.validations.base import BaseValidation
 from alfred.redis_manager import RedisManager
 from datetime import datetime, timedelta
@@ -36,6 +37,15 @@ class BaseModelValidation(BaseValidation, ABC):
             raise ValueError(f"Missing required keys in kwargs: {', '.join(missing_keys)}")
 
     @staticmethod
+    def get_expiration_function(reset_period: ResetPeriod):
+        switcher = {
+            ResetPeriod.HOURLY: BaseModelValidation.calculate_hour_expiration,
+            ResetPeriod.DAILY: BaseModelValidation.calculate_day_expiration,
+            ResetPeriod.MONTHLY: BaseModelValidation.calculate_month_expiration
+        }
+        return switcher.get(reset_period, BaseModelValidation.calculate_month_expiration)
+
+    @staticmethod
     def calculate_month_expiration():
         """
         Calculate the expiration time in seconds for the current month.
@@ -51,4 +61,13 @@ class BaseModelValidation(BaseValidation, ABC):
         """
         now = datetime.now()
         start_of_next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        return int((start_of_next_day - now).total_seconds())
+
+    @staticmethod
+    def calculate_hour_expiration():
+        """
+        Calculate the expiration time in seconds for the current hour.
+        """
+        now = datetime.now()
+        start_of_next_day = (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
         return int((start_of_next_day - now).total_seconds())
