@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import Optional
 from urllib.parse import urlparse
 import redis.asyncio as redis
 
@@ -29,7 +30,7 @@ class RedisManager:
         finally:
             await self.client.close()
 
-    async def increment_request_count(self, user_id: int, org_id: int, rule_id: str, expiration: int = 3600) -> list:
+    async def increment_request_count(self, user_id: str, org_id: Optional[str], rule_id: str, expiration: int = 3600) -> list:
         async with self.connect() as client:
             key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
             is_new = await client.setnx(key, 0)
@@ -40,12 +41,12 @@ class RedisManager:
 
         return [True, {"key": key, "count": count}, "SUCCESS"]
 
-    async def get_request_count(self, user_id: int, org_id: int, rule_id: str) -> int:
+    async def get_request_count(self, user_id: str, org_id: Optional[str], rule_id: str) -> int:
         async with self.connect() as client:
             key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
         return int(await client.get(key) or 0)
 
-    async def reset_request_count(self, user_id: int, org_id: int, rule_id: str):
+    async def reset_request_count(self, user_id: str, org_id: Optional[str], rule_id: str):
         async with self.connect() as client:
             key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
             await client.delete(key)

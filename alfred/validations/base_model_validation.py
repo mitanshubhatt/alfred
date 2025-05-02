@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Optional
 
 from alfred.constants import ResetPeriod
 from alfred.validations.base import BaseValidation
@@ -7,14 +8,14 @@ from datetime import datetime, timedelta
 
 
 class BaseModelValidation(BaseValidation, ABC):
-    def __init__(self, redis_manager: RedisManager, limit: int, expiration_func):
+    def __init__(self, redis_manager: RedisManager, limit: Optional[int], expiration_func):
         super().__init__(redis_manager)
         self.redis_manager = redis_manager
         self.limit = limit
         self.expiration_func = expiration_func
         self.limit_reached_message = "MODEL_REQUEST_LIMIT_REACHED"
 
-    async def validate_request(self, user_id: int, org_id: int, rule_id: str) -> list:
+    async def validate_request(self, user_id: str, org_id: Optional[str], rule_id: str) -> list:
         """
         Validate if the request is within the allowed limit.
         """
