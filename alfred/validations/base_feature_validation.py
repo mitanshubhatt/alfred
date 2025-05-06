@@ -1,5 +1,6 @@
 from abc import ABC
 from datetime import datetime, timedelta
+from typing import Optional
 
 from alfred.constants import ResetPeriod
 from alfred.redis_manager import RedisManager
@@ -14,7 +15,7 @@ class BaseFeatureValidation(BaseValidation, ABC):
         self.expiration_func = expiration_func
         self.limit_reached_message = "FEATURE_REQUEST_LIMIT_REACHED"
 
-    async def validate_request(self, user_id: int, org_id: int, rule_id: str) -> list:
+    async def validate_request(self, user_id: str, org_id: Optional[str], rule_id: str) -> list:
         """
         Validate if the request is within the allowed limit.
         """

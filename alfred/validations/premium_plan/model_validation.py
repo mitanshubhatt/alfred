@@ -27,7 +27,7 @@ class PremiumPlanModelValidation(BaseModelValidation):
         """
         Validate if the request is within the allowed limits for standard or premium models.
         """
-        if self.kwargs.get("endpoint") not in self.restricted_endpoints:
+        if self.kwargs.get("endpoint") not in self.condition_endpoints:
             return [True, {}, self.success_message]
         
         self._validate_kwargs(self.kwargs)
