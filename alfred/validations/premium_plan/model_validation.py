@@ -17,8 +17,8 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.premium_models = condition_data.get("allowed_premium_models", [])
         self.premium_models_limit = int(condition_data.get("premium_models_limit", 0))
         self.standard_models_limit = int(condition_data.get("standard_models_limit", 0))
-        self.premium_limit_time_period = condition_data.get("premium_limit_time_period", "daily")
-        self.standard_limit_time_period = condition_data.get("standard_limit_time_period", "daily")
+        self.premium_limit_time_period = condition_data.get("reset_period", "daily")
+        self.standard_limit_time_period = condition_data.get("reset_period", "daily")
         self.condition_endpoints = self._extract_condition_endpoints(condition_data)
         self.error_message = "MODEL_NOT_ALLOWED"
 
