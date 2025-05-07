@@ -15,8 +15,8 @@ class PremiumPlanModelValidation(BaseModelValidation):
         self.rule_id = rule_id
         self.standard_models = condition_data.get("allowed_standard_models", [])
         self.premium_models = condition_data.get("allowed_premium_models", [])
-        self.premium_models_limit = int(condition_data.get("premium_models_limit", 0))
-        self.standard_models_limit = int(condition_data.get("standard_models_limit", 0))
+        self.premium_models_limit = int(condition_data.get("request_limit", 0))
+        self.standard_models_limit = int(condition_data.get("request_limit", 0))
         self.premium_limit_time_period = condition_data.get("reset_period", "daily")
         self.standard_limit_time_period = condition_data.get("reset_period", "daily")
         self.condition_endpoints = self._extract_condition_endpoints(condition_data)
