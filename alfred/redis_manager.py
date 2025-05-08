@@ -32,7 +32,7 @@ class RedisManager:
 
     async def increment_request_count(self, user_id: str, org_id: Optional[str], rule_id: str, expiration: int = 3600) -> list:
         async with self.connect() as client:
-            key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
+            key = f"org:{org_id}:rule:{rule_id}" if org_id else f"user:{user_id}:rule:{rule_id}"
             is_new = await client.setnx(key, 0)
             count = await client.incr(key)
 
@@ -43,10 +43,10 @@ class RedisManager:
 
     async def get_request_count(self, user_id: str, org_id: Optional[str], rule_id: str) -> int:
         async with self.connect() as client:
-            key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
+            key = f"org:{org_id}:rule:{rule_id}" if org_id else f"user:{user_id}:rule:{rule_id}"
         return int(await client.get(key) or 0)
 
     async def reset_request_count(self, user_id: str, org_id: Optional[str], rule_id: str):
         async with self.connect() as client:
-            key = f"user:{user_id}:org:{org_id}:rule:{rule_id}"
+            key = f"org:{org_id}:rule:{rule_id}" if org_id else f"user:{user_id}:rule:{rule_id}"
             await client.delete(key)
