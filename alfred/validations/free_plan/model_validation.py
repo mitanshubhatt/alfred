@@ -8,7 +8,7 @@ class FreePlanModelValidation(BaseModelValidation):
         super().__init__(
             redis_manager=redis_manager,
             limit=self._extract_request_limit(condition_data),
-            expiration_func=self.calculate_month_expiration
+            expiration_func=self.get_expiration_function(condition_data.get("reset_period"))
         )
         self.allowed_models = self._extract_allowed_models(condition_data)
         self.condition_endpoints = self._extract_condition_endpoints(condition_data)
